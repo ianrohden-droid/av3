@@ -1,40 +1,67 @@
 async function fetchProdutos() {
   try {
     const res = await fetch('/produtos');
-    const produtos = await res.json();
-    renderProdutos(produtos);
+    if (!res.ok) throw new Error('Falha ao buscar produtos');
+    renderProdutos(await res.json());
   } catch (err) {
-    console.error('Erro ao buscar produtos', err);
+    renderState('Nao foi possivel carregar os produtos.');
+    showMessage('Verifique se o servidor esta em execucao.', 'error');
   }
 }
 
 function renderProdutos(produtos) {
   const tbody = document.getElementById('produtosBody');
+  document.getElementById('productCount').textContent = produtos.length;
   tbody.innerHTML = '';
-  produtos.forEach(p => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${p.id}</td>
-      <td>${p.nome}</td>
-      <td>${formatPreco(p.preco)}</td>
-      <td>${p.quantidade}</td>
-    `;
-    tbody.appendChild(tr);
+  if (produtos.length === 0) {
+    renderState('Nenhum produto cadastrado ainda.');
+    return;
+  }
+
+  produtos.forEach(produto => {
+    const row = document.createElement('tr');
+    [produto.id, produto.nome, formatPreco(produto.preco), produto.quantidade].forEach(value => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.appendChild(cell);
+    });
+    tbody.appendChild(row);
   });
 }
 
-function formatPreco(v) {
-  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function renderState(message) {
+  const tbody = document.getElementById('produtosBody');
+  tbody.innerHTML = '';
+  const row = document.createElement('tr');
+  const cell = document.createElement('td');
+  cell.colSpan = 4;
+  cell.className = 'table-state';
+  cell.textContent = message;
+  row.appendChild(cell);
+  tbody.appendChild(row);
 }
 
-document.getElementById('formProduto').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const nome = document.getElementById('nome').value;
-  const preco = document.getElementById('preco').value;
-  const quantidade = document.getElementById('quantidade').value;
+function formatPreco(value) {
+  return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
 
-  const produto = { nome, preco: Number(preco), quantidade: Number(quantidade) };
+function showMessage(message, type = '') {
+  const formMessage = document.getElementById('formMessage');
+  formMessage.textContent = message;
+  formMessage.className = `form-message ${type}`;
+}
 
+document.getElementById('formProduto').addEventListener('submit', async event => {
+  event.preventDefault();
+  const submitButton = document.getElementById('submitButton');
+  const produto = {
+    nome: document.getElementById('nome').value,
+    preco: Number(document.getElementById('preco').value),
+    quantidade: Number(document.getElementById('quantidade').value)
+  };
+
+  submitButton.disabled = true;
+  showMessage('Salvando produto...');
   try {
     const res = await fetch('/produtos', {
       method: 'POST',
@@ -42,20 +69,18 @@ document.getElementById('formProduto').addEventListener('submit', async (e) => {
       body: JSON.stringify(produto)
     });
     if (!res.ok) {
-      const err = await res.json();
-      alert(err.error || 'Erro ao cadastrar');
+      const error = await res.json();
+      showMessage(error.error || 'Erro ao cadastrar.', 'error');
       return;
     }
-    // Limpa campos
-    document.getElementById('nome').value = '';
-    document.getElementById('preco').value = '';
-    document.getElementById('quantidade').value = '';
-    // Atualiza tabela
-    fetchProdutos();
+    event.target.reset();
+    showMessage('Produto cadastrado com sucesso.', 'success');
+    await fetchProdutos();
   } catch (err) {
-    console.error('Erro ao enviar produto', err);
+    showMessage('Nao foi possivel salvar o produto.', 'error');
+  } finally {
+    submitButton.disabled = false;
   }
 });
 
-// Carrega os produtos ao abrir a página
 window.addEventListener('DOMContentLoaded', fetchProdutos);
