@@ -2,28 +2,50 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cadastro de Produtos</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Cadastro de Produtos</h1>
-
-  <form id="formProduto">
-    <label>Nome<br><input type="text" id="nome" required></label>
-    <label>Preço<br><input type="number" id="preco" step="0.01" required></label>
-    <label>Quantidade<br><input type="number" id="quantidade" step="1" required></label>
-    <button type="submit">Cadastrar Produto</button>
-  </form>
-
-  <h2>Produtos</h2>
-  <table>
-    <thead>
-      <tr><th>ID</th><th>Produto</th><th>Preço</th><th>Quantidade</th></tr>
-    </thead>
-    <tbody id="produtosBody"></tbody>
-  </table>
-
+  <main class="container">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Inventario simples</p>
+        <h1>Cadastro de Produtos</h1>
+        <p class="subtitle">Registre seus produtos e acompanhe tudo em um so lugar.</p>
+      </div>
+    </header>
+    <section class="panel register-panel" aria-labelledby="form-title">
+      <div class="section-heading">
+        <div><p class="section-kicker">Novo registro</p><h2 id="form-title">Adicionar produto</h2></div>
+        <span class="required-note">* Campos obrigatorios</span>
+      </div>
+      <form id="formProduto">
+        <label for="nome">Nome do produto <span>*</span>
+          <input type="text" id="nome" name="nome" placeholder="Ex.: Teclado mecanico" autocomplete="off" required />
+        </label>
+        <label for="preco">Preco <span>*</span>
+          <div class="input-prefix"><span>R$</span><input type="number" id="preco" name="preco" placeholder="0,00" min="0.01" step="0.01" required /></div>
+        </label>
+        <label for="quantidade">Quantidade <span>*</span>
+          <input type="number" id="quantidade" name="quantidade" placeholder="0" min="0" step="1" required />
+        </label>
+        <button type="submit" id="submitButton"><span aria-hidden="true">+</span> Cadastrar produto</button>
+      </form>
+      <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+    </section>
+    <section class="catalog-section" aria-labelledby="catalog-title">
+      <div class="section-heading catalog-heading">
+        <div><p class="section-kicker">Visao geral</p><h2 id="catalog-title">Produtos cadastrados <span id="productCount">0</span></h2></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Produto</th><th>Preco</th><th>Quantidade</th></tr></thead>
+          <tbody id="produtosBody"><tr><td colspan="4" class="table-state">Carregando produtos...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
   <script src="script.js"></script>
 </body>
 </html>
