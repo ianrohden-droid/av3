@@ -1,17 +1,12 @@
 {
-  "name": "atividdes",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^5.2.1"
-  },
-  "devDependencies": {},
-  "description": ""
+	"name": "cadastro-produtos",
+	"version": "1.0.0",
+	"description": "Aplicacao web para cadastro de produtos",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^5.2.1"
+	}
 }
